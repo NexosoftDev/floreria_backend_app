@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from perfiles.callback import CustomOIDCCallbackView
-from mozilla_django_oidc.views import OIDCAuthenticationRequestView, OIDCLogoutView
+from oidc.callback import CustomOIDCCallbackView
+from mozilla_django_oidc.views import OIDCAuthenticationRequestView
 
 urlpatterns = [
     path('dadmin/', admin.site.urls),

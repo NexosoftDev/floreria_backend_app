@@ -76,15 +76,18 @@ INSTALLED_APPS = [
     'django_filters',
     'dynamic_preferences',
     'mozilla_django_oidc',
+    'corsheaders',
 
     'perfiles',
     'catalogo',
-    'configuracion'
+    'configuracion',
+    'oidc',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -127,7 +130,6 @@ iQIDAQAB
 }
 
 
-print(USERS_AUTH)
 AUTH_USER_MODEL = 'users.user'
 
 WSGI_APPLICATION = 'FLORERIA.wsgi.application'
@@ -245,7 +247,7 @@ REST_FRAMEWORK = {
 # CONFIGURACION DE AUTENTICACION
 
 AUTHENTICATION_BACKENDS = (
-    'perfiles.backends.CustomOIDCAuthenticationBackend',
+    'oidc.backends.CustomOIDCAuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -273,3 +275,9 @@ OIDC_CREATE_USER = True
 # Almacenar tokens en la sesión
 OIDC_STORE_ACCESS_TOKEN = True
 OIDC_STORE_ID_TOKEN = True
+
+# CONFIGURACION DE CORS
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Tu frontend React
+]

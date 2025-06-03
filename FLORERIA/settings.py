@@ -115,19 +115,31 @@ TEMPLATES = [
 
 DJANGO_USERS_AUTH_TOKEN = True
 
-USERS_AUTH = {
-    "SECRET_KEY": SECRET_KEY,
-    "TOKEN_ALGORITHM": "RS256",
-    "PUBLIC_KEY": """-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmti3mVcbtBovkebbij9p
-w8cPCLlEOB2ODdoht2douXVA5kGHR8Ac68HCoVCUEITfPH5ikiqoTraFZCdG1u6t
-bpnSfvafgf8DkZp6e08ShZFzL1SG4yQZ3GVXEzEWzoUiG9eEjG/uGK+imCuTu+4q
-3tHmKYR1JiyzQ6RIz+lGI3/Ht3B4b7TCs2TIBaeyxJANSAU385Q8Fy+sKIk65hLU
-MRQmBbJHQh0b5KXfTmXX5WT1aBwcKK/bw4IUOUNEDcFVfd5tEXrWyw43N8CBDeJF
-ELaKk2x7ZdoBN4BlNMtPQ8wUi/WEXr3Xv06qmBKhGPYiOwKoQCvaPLozH5Lx+FDa
-iQIDAQAB
------END PUBLIC KEY-----"""
+# Configuración de logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'oidc': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
 }
+
+JWT_SECRET_KEY = "tu_clave_secreta_super_segura_para_jwt_local_2024"
 
 
 AUTH_USER_MODEL = 'users.user'
@@ -194,27 +206,19 @@ DYNAMIC_PREFERENCES = {
     "ENABLE_CACHE": False,  # en desarrollo, podés desactivarlo para ver los cambios al instante
 }
 
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=int(os.getenv('SIMPLE_JWT_TOKEN_LIFETIME', 30))),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=int(os.getenv('SIMPLE_JWT_REFRESH_LIFETIME', 30))),
     'ROTATE_REFRESH_TOKENS': os.getenv('ROTATE_REFRESH_TOKENS', True),
     'BLACKLIST_AFTER_ROTATION': os.getenv('BLACKLIST_AFTER_ROTATION', True),
     'UPDATE_LAST_LOGIN': os.getenv('UPDATE_LAST_LOGIN', False),
-    'ALGORITHM': os.getenv('ALGORITHM', 'RS256'),
-    'SIGNING_KEY': SECRET_KEY,
+    'ALGORITHM': 'HS256',  # Cambiado a HS256 para tokens locales
+    'SIGNING_KEY': JWT_SECRET_KEY,  # Usar la nueva clave secreta
     'AUTH_HEADER_TYPES': ('Bearer',),
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'VERIFYING_KEY': """-----BEGIN PUBLIC KEY-----
-    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmti3mVcbtBovkebbij9p
-    w8cPCLlEOB2ODdoht2douXVA5kGHR8Ac68HCoVCUEITfPH5ikiqoTraFZCdG1u6t
-    bpnSfvafgf8DkZp6e08ShZFzL1SG4yQZ3GVXEzEWzoUiG9eEjG/uGK+imCuTu+4q
-    3tHmKYR1JiyzQ6RIz+lGI3/Ht3B4b7TCs2TIBaeyxJANSAU385Q8Fy+sKIk65hLU
-    MRQmBbJHQh0b5KXfTmXX5WT1aBwcKK/bw4IUOUNEDcFVfd5tEXrWyw43N8CBDeJF
-    ELaKk2x7ZdoBN4BlNMtPQ8wUi/WEXr3Xv06qmBKhGPYiOwKoQCvaPLozH5Lx+FDa
-    iQIDAQAB
-    -----END PUBLIC KEY-----"""
 }
 
 REST_FRAMEWORK = {
@@ -223,6 +227,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated'
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        #'oidc.authentication.KeycloakJWTAuthentication',
         'users.managers.CustomJWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
@@ -276,8 +281,9 @@ OIDC_CREATE_USER = True
 OIDC_STORE_ACCESS_TOKEN = True
 OIDC_STORE_ID_TOKEN = True
 
-# CONFIGURACION DE CORS
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Tu frontend React
-]
+
+# CONFIGURACION DE AUTENTICACION
+USERS_AUTH = {
+    "SECRET_KEY": JWT_SECRET_KEY,
+    "OIDC_OP_BASE_URL" : OIDC_OP_BASE_URL
+}

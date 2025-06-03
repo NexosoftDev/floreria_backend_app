@@ -173,7 +173,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 DYNAMIC_PREFERENCES = {
-    "ENABLE_CACHE": False,  # en desarrollo, podés desactivarlo para ver los cambios al instante
+    "ENABLE_CACHE": False,
 }
 
 

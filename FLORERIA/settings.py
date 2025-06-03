@@ -20,36 +20,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = """-----BEGIN PRIVATE KEY-----
-MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCa2LeZVxu0Gi+R
-5tuKP2nDxw8IuUQ4HY4N2iG3Z2i5dUDmQYdHwBzrwcKhUJQQhN88fmKSKqhOtoVk
-J0bW7q1umdJ+9p+B/wORmnp7TxKFkXMvVIbjJBncZVcTMRbOhSIb14SMb+4Yr6KY
-K5O77ire0eYphHUmLLNDpEjP6UYjf8e3cHhvtMKzZMgFp7LEkA1IBTfzlDwXL6wo
-iTrmEtQxFCYFskdCHRvkpd9OZdflZPVoHBwor9vDghQ5Q0QNwVV93m0RetbLDjc3
-wIEN4kUQtoqTbHtl2gE3gGU0y09DzBSL9YRevde/TqqYEqEY9iI7AqhAK9o8ujMf
-kvH4UNqJAgMBAAECggEAA1VOcHXUUhZtNzgPukRer7jxfSfVzNpwBCLRrnvCoJli
-TgKTmasMRFPtr2DHayqdDpWO5CQYbudVbEA/MWG+aH7Vred7rAX0CvaXE9/yH19v
-6hEo/Ss6BklFLFPWcJgjkZNcVlSTfMMNHjbz7Wv1TsoYaQThq7JzIm3fJmCYYqu1
-KMNR9vQZZ0ZabuARRztBFUiUY47qXbztsYq9H0x+EPqJcsfUAOeZR6P/nXFLDDmG
-eNJCJHWtJ6XdHFedYpa6JX2F30yWUiwS550xEPici8jwWJQqWnUEZA1MM2kuSE4X
-VjbWDOnQJVkU/2SlLlBEBqufYQYp7ET5lRZA7qZM7QKBgQDRxRHTHPu4VDjk5Chq
-dzHEh4sMAmjrHiIe32Vu1ZBhaiQJ6wOX2TVJhtrqJBNm5FQAJLSdgA/qy1vHlpeL
-Ddd1Ppb1vgznQbVcpIstEdqG44T5W63EinMXp4BgUfYtZswMwCOQQ9pRZ2VOrOwL
-RhTFvOphvmF2p7+YREaXdLDBLQKBgQC8+POWE2z84CVFfPRvTtwG36jSaPiFKUTR
-7gMO+PGej3tlfnuNNP0E/yeAz/hBdRlcRZXdhlDNY5KhtF4yRXBvHEVzGAHlx/ie
-Yr1wQ2dqoZr5VFLNEGm1D8MAW2QubqXRNf2MK/ib9CfmvirKdKo5tV5yk3m862tp
-WeYkAHnATQKBgDdLJg6q9iM5eCHFjm2565FtVRaeT/+h2saehkM34i37Z3KB01mk
-dKpj9LKBPegCSa4b/swBZLC0WAX9SQbraB7Ml8hBB2+x31eDO/huW1bxBC0ioGRN
-Rlc23N0G3chL739w6i7t489PXOHnLPUvzOvuhy2qnFBFmXhOjvj/VlQlAoGABvF+
-wbzk/EWgGPWGZbCYFQiSw2hn+TyS8sO0CRDMj+7lscz77SxNP6nAYdNCY+VRkTpd
-T05oGaPW92oRK/exMePwCVKQf0jhsbAfFcjkO97EOvUGNdKsj6KMn66795jJLu60
-6jmTYOePr8K8/8NZndU0KzGP/4kG4VAUTK5XyuECgYBoNktwU0b24QuYTf9CEfxf
-F4Ewd2YRuOEqKNKW7KnRUqWFLXNNXZw14ucS14HW/1v8Aoh9VvpDNTPDXhSbVTcg
-iXUc8AO6kC0AZBvmZoTQRif3f2oTGL7dtYXM3nmqxCx45qSOw2TYxqM/Aecp/ut4
-vToFIHwp0hFS+4yEtasGAg==
------END PRIVATE KEY-----"""
+SECRET_KEY = os.getenv('SECRET_KEY', '')
+SECRET_KEY_LOCAL = os.getenv('SECRET_KEY_LOCAL', '')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -139,8 +111,6 @@ LOGGING = {
     },
 }
 
-JWT_SECRET_KEY = "tu_clave_secreta_super_segura_para_jwt_local_2024"
-
 
 AUTH_USER_MODEL = 'users.user'
 
@@ -213,8 +183,8 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': os.getenv('ROTATE_REFRESH_TOKENS', True),
     'BLACKLIST_AFTER_ROTATION': os.getenv('BLACKLIST_AFTER_ROTATION', True),
     'UPDATE_LAST_LOGIN': os.getenv('UPDATE_LAST_LOGIN', False),
-    'ALGORITHM': 'HS256',  # Cambiado a HS256 para tokens locales
-    'SIGNING_KEY': JWT_SECRET_KEY,  # Usar la nueva clave secreta
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY_LOCAL,
     'AUTH_HEADER_TYPES': ('Bearer',),
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
@@ -258,21 +228,21 @@ AUTHENTICATION_BACKENDS = (
 
 # CONFIGURACION DE OIDC DE KEYCLOAK
 
-OIDC_OP_BASE_URL = 'https://keycloak-demo.apismty.gob.mx/realms/floreria_app'
+OIDC_OP_BASE_URL = os.getenv('OIDC_OP_BASE_URL', 'http://127.0.0.1:5000/')
 
 OIDC_OP_AUTHORIZATION_ENDPOINT = f'{OIDC_OP_BASE_URL}/protocol/openid-connect/auth'
 OIDC_OP_TOKEN_ENDPOINT = f'{OIDC_OP_BASE_URL}/protocol/openid-connect/token'
 OIDC_OP_USER_ENDPOINT = f'{OIDC_OP_BASE_URL}/protocol/openid-connect/userinfo'
 OIDC_OP_JWKS_ENDPOINT = f'{OIDC_OP_BASE_URL}/protocol/openid-connect/certs'
 
-OIDC_RP_CLIENT_ID = 'floreria_app'
-OIDC_RP_CLIENT_SECRET = 'Notu2p9zBUzu4UZcVBmHVW5hoGcvwQgQ'
+OIDC_RP_CLIENT_ID = os.getenv('OIDC_RP_CLIENT_ID', '')
+OIDC_RP_CLIENT_SECRET = os.getenv('OIDC_RP_CLIENT_SECRET', '')
 OIDC_RP_SCOPES = 'openid profile email'
 
-LOGIN_URL = '/oidc/authenticate/'
-OIDC_RP_SIGN_ALGO = 'RS256'
-LOGOUT_REDIRECT_URL = '/'
-LOGIN_REDIRECT_URL = 'http://localhost:3000/'
+LOGIN_URL = os.getenv('LOGIN_URL', '/')
+OIDC_RP_SIGN_ALGO = os.getenv('OIDC_RP_SIGN_ALGO', 'RS256')
+LOGOUT_REDIRECT_URL = os.getenv('LOGOUT_REDIRECT_URL', '/')
+LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', '/')
 
 # Opcional: auto-crear usuarios
 OIDC_CREATE_USER = True
@@ -284,6 +254,6 @@ OIDC_STORE_ID_TOKEN = True
 
 # CONFIGURACION DE AUTENTICACION
 USERS_AUTH = {
-    "SECRET_KEY": JWT_SECRET_KEY,
+    "SECRET_KEY": SECRET_KEY_LOCAL,
     "OIDC_OP_BASE_URL" : OIDC_OP_BASE_URL
 }

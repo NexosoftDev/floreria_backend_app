@@ -228,9 +228,6 @@ AUTHENTICATION_BACKENDS = (
 
 # CONFIGURACION DE OIDC DE KEYCLOAK
 
-tupla = ({"nombre": "ee"}, {"nombre": "ee"})
-
-
 OIDC_OP_BASE_URL = os.getenv('OIDC_OP_BASE_URL', 'http://127.0.0.1:5000/')
 
 OIDC_OP_AUTHORIZATION_ENDPOINT = f'{OIDC_OP_BASE_URL}/protocol/openid-connect/auth'

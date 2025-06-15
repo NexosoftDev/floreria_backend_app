@@ -80,26 +80,6 @@ OIDC_RP_CLIENT_ID="floreria-backend"
 OIDC_RP_CLIENT_SECRET="tu-client-secret"
 LOGOUT_REDIRECT_URL="http://localhost:8000"
 
-# Configuración de Redis
-REDIS_URL="redis://localhost:6379/0"
-CELERY_BROKER_URL="redis://localhost:6379/0"
-CELERY_RESULT_BACKEND="redis://localhost:6379/0"
-
-# Configuración de Email
-EMAIL_HOST="smtp.gmail.com"
-EMAIL_PORT=587
-EMAIL_USE_TLS=True
-EMAIL_HOST_USER="tu-email@gmail.com"
-EMAIL_HOST_PASSWORD="tu-contraseña-de-aplicacion"
-
-# Configuración de Archivos Estáticos
-MEDIA_ROOT="/ruta/a/media/"
-STATIC_ROOT="/ruta/a/static/"
-
-# Configuración de API Externa (opcional)
-MAPS_API_KEY="tu-api-key-de-google-maps"
-PAYMENT_GATEWAY_KEY="tu-clave-de-pasarela-de-pago"
-
 # Configuración de Seguridad
 ALLOWED_HOSTS="localhost,127.0.0.1,tu-dominio.com"
 CORS_ALLOWED_ORIGINS="http://localhost:3000,http://127.0.0.1:3000"
@@ -133,18 +113,6 @@ python manage.py createsuperuser
 python manage.py loaddata fixtures/initial_data.json
 ```
 
-### 7. Configurar Redis y Celery
-
-```bash
-# Iniciar Redis (en otra terminal)
-redis-server
-
-# Iniciar Celery Worker (en otra terminal)
-celery -A floreria_backend worker --loglevel=info
-
-# Iniciar Celery Beat para tareas programadas (en otra terminal)
-celery -A floreria_backend beat --loglevel=info
-```
 
 ### 8. Ejecutar el Servidor de Desarrollo
 
@@ -183,31 +151,6 @@ Crear los siguientes roles en Keycloak:
 - `floreria_delivery`: Personal de entrega
 - `floreria_customer`: Cliente registrado
 
-## Estructura del Proyecto
-
-```
-floreria_backend_app/
-├── apps/
-│   ├── authentication/      # Autenticación y usuarios
-│   ├── inventory/          # Gestión de inventario
-│   ├── orders/            # Procesamiento de pedidos
-│   ├── customers/         # Gestión de clientes
-│   ├── delivery/          # Sistema de entregas
-│   ├── products/          # Gestión de productos
-│   ├── suppliers/         # Gestión de proveedores
-│   ├── reports/           # Reportes y analytics
-│   └── notifications/     # Sistema de notificaciones
-├── config/
-│   ├── settings/          # Configuraciones por entorno
-│   ├── urls.py           # URLs principales
-│   └── wsgi.py           # Configuración WSGI
-├── static/               # Archivos estáticos
-├── media/               # Archivos de media
-├── templates/           # Plantillas HTML
-├── fixtures/            # Datos iniciales
-├── requirements.txt     # Dependencias Python
-└── manage.py           # Script de gestión Django
-```
 
 ## Referencia de Variables de Entorno
 
@@ -219,9 +162,6 @@ floreria_backend_app/
 | `OIDC_OP_BASE_URL` | URL base del realm de Keycloak | Sí | `https://keycloak.example.com/realms/floreria/` |
 | `OIDC_RP_CLIENT_ID` | Identificador del cliente en Keycloak | Sí | `floreria-backend` |
 | `OIDC_RP_CLIENT_SECRET` | Secreto del cliente en Keycloak | Sí | `tu-client-secret` |
-| `REDIS_URL` | URL de conexión a Redis | Sí | `redis://localhost:6379/0` |
-| `EMAIL_HOST` | Servidor SMTP para envío de emails | No | `smtp.gmail.com` |
-| `MAPS_API_KEY` | Clave API de Google Maps | No | `AIza...` |
 
 ## Endpoints de la API
 
@@ -235,160 +175,7 @@ floreria_backend_app/
 | `/api/v1/auth/token/` | POST | Obtener token JWT | Sesión |
 | `/api/v1/auth/me/` | GET | Información del usuario actual | Token |
 
-### Productos e Inventario
 
-| Endpoint | Método | Descripción | Autenticación |
-|----------|--------|-------------|---------------|
-| `/api/v1/products/` | GET/POST | Listar/crear productos | Token |
-| `/api/v1/products/{id}/` | GET/PUT/PATCH/DELETE | Gestionar producto específico | Token |
-| `/api/v1/inventory/` | GET/POST | Gestión de inventario | Token |
-| `/api/v1/inventory/low-stock/` | GET | Productos con stock bajo | Token |
-| `/api/v1/categories/` | GET/POST | Gestión de categorías | Token |
-
-### Pedidos
-
-| Endpoint | Método | Descripción | Autenticación |
-|----------|--------|-------------|---------------|
-| `/api/v1/orders/` | GET/POST | Listar/crear pedidos | Token |
-| `/api/v1/orders/{id}/` | GET/PUT/PATCH | Gestionar pedido específico | Token |
-| `/api/v1/orders/{id}/status/` | PATCH | Actualizar estado del pedido | Token |
-| `/api/v1/orders/today/` | GET | Pedidos del día | Token |
-| `/api/v1/orders/pending/` | GET | Pedidos pendientes | Token |
-
-### Clientes
-
-| Endpoint | Método | Descripción | Autenticación |
-|----------|--------|-------------|---------------|
-| `/api/v1/customers/` | GET/POST | Gestión de clientes | Token |
-| `/api/v1/customers/{id}/` | GET/PUT/PATCH/DELETE | Cliente específico | Token |
-| `/api/v1/customers/{id}/orders/` | GET | Historial de pedidos del cliente | Token |
-| `/api/v1/customers/search/` | GET | Buscar clientes | Token |
-
-### Entregas
-
-| Endpoint | Método | Descripción | Autenticación |
-|----------|--------|-------------|---------------|
-| `/api/v1/deliveries/` | GET/POST | Gestión de entregas | Token |
-| `/api/v1/deliveries/{id}/` | GET/PUT/PATCH | Entrega específica | Token |
-| `/api/v1/deliveries/route/` | GET | Optimizar ruta de entregas | Token |
-| `/api/v1/deliveries/tracking/{id}/` | GET | Seguimiento de entrega | Token/Público |
-
-### Reportes
-
-| Endpoint | Método | Descripción | Autenticación |
-|----------|--------|-------------|---------------|
-| `/api/v1/reports/sales/` | GET | Reporte de ventas | Token |
-| `/api/v1/reports/inventory/` | GET | Reporte de inventario | Token |
-| `/api/v1/reports/customers/` | GET | Reporte de clientes | Token |
-| `/api/v1/reports/export/` | GET | Exportar reportes | Token |
-
-## Modelos de Datos Principales
-
-### Producto
-```python
-class Product(models.Model):
-    name = models.CharField(max_length=200)
-    description = models.TextField()
-    category = models.ForeignKey(Category)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    stock_quantity = models.IntegerField()
-    minimum_stock = models.IntegerField()
-    image = models.ImageField(upload_to='products/')
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-```
-
-### Pedido
-```python
-class Order(models.Model):
-    ORDER_STATUS_CHOICES = [
-        ('pending', 'Pendiente'),
-        ('confirmed', 'Confirmado'),
-        ('preparing', 'En Preparación'),
-        ('ready', 'Listo'),
-        ('in_delivery', 'En Entrega'),
-        ('delivered', 'Entregado'),
-        ('cancelled', 'Cancelado'),
-    ]
-    
-    customer = models.ForeignKey(Customer)
-    status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    delivery_date = models.DateTimeField()
-    delivery_address = models.TextField()
-    special_instructions = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-```
-
-## Ejemplos de Uso
-
-### Integración Frontend
-
-```javascript
-// Autenticación
-const login = () => {
-    window.location.href = '/oidc/authenticate/';
-};
-
-// Obtener token
-const getToken = async () => {
-    const response = await fetch('/api/v1/auth/token/', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        }
-    });
-    const data = await response.json();
-    return data.access_token;
-};
-
-// Crear pedido
-const createOrder = async (orderData, token) => {
-    const response = await fetch('/api/v1/orders/', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(orderData)
-    });
-    return await response.json();
-};
-
-// Obtener productos
-const getProducts = async (token) => {
-    const response = await fetch('/api/v1/products/', {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    });
-    return await response.json();
-};
-```
-
-### Uso de la API con curl
-
-```bash
-# Obtener productos
-curl -H "Authorization: Bearer YOUR_TOKEN" \
-     http://localhost:8000/api/v1/products/
-
-# Crear nuevo pedido
-curl -X POST \
-     -H "Authorization: Bearer YOUR_TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"customer_id": 1, "products": [{"id": 1, "quantity": 2}]}' \
-     http://localhost:8000/api/v1/orders/
-
-# Actualizar estado de pedido
-curl -X PATCH \
-     -H "Authorization: Bearer YOUR_TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"status": "confirmed"}' \
-     http://localhost:8000/api/v1/orders/1/status/
-```
 
 ## Configuración de Endpoints OIDC
 
@@ -402,7 +189,6 @@ OIDC_OP_JWKS_ENDPOINT = f'{OIDC_OP_BASE_URL}/protocol/openid-connect/certs'
 ```
 
 ## Desarrollo vs Producción
-
 ### Entorno de Desarrollo
 - Usar `SECRET_KEY_LOCAL` para gestión simplificada de claves
 - Configurar `DEBUG=True`
@@ -419,26 +205,6 @@ OIDC_OP_JWKS_ENDPOINT = f'{OIDC_OP_BASE_URL}/protocol/openid-connect/certs'
 - Implementar monitoreo y logging
 - Configurar backup automático de base de datos
 
-## Tareas Asíncronas con Celery
-
-El sistema incluye las siguientes tareas asíncronas:
-
-```python
-# Envío de notificaciones
-@shared_task
-def send_order_notification(order_id):
-    # Enviar notificación de pedido
-
-# Actualización de inventario
-@shared_task
-def update_inventory_levels():
-    # Actualizar niveles de inventario
-
-# Generación de reportes
-@shared_task
-def generate_daily_report():
-    # Generar reporte diario
-```
 
 ## Solución de Problemas
 
@@ -453,11 +219,6 @@ def generate_daily_report():
    - Verificar conexión a PostgreSQL
    - Ejecutar migraciones pendientes
    - Revisar permisos de usuario de BD
-
-3. **Errores de Redis/Celery**
-   - Confirmar que Redis esté ejecutándose
-   - Verificar configuración de Celery
-   - Revisar logs de worker
 
 ### Depuración
 

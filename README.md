@@ -73,11 +73,6 @@ SECRET_KEY_LOCAL="tu-secret-key-temporal-para-desarrollo"
 
 # Configuración de Base de Datos
 DATABASE_URL="postgresql://usuario:contraseña@localhost:5432/floreria_db"
-DB_NAME="floreria_db"
-DB_USER="floreria_user"
-DB_PASSWORD="tu_contraseña_segura"
-DB_HOST="localhost"
-DB_PORT="5432"
 
 # Configuración de Keycloak OIDC
 OIDC_OP_BASE_URL="https://tu-servidor-keycloak.com/realms/floreria/"

@@ -23,10 +23,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', '')
 SECRET_KEY_LOCAL = os.getenv('SECRET_KEY_LOCAL', '')
 
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+CORS_ALLOW_CREDENTIALS = True
+
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 # Application definition
@@ -105,6 +112,14 @@ LOGGING = {
     },
     'loggers': {
         'oidc': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'mozilla_django_oidc': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'django.request': {
             'handlers': ['console'],
             'level': 'DEBUG',
         },
@@ -242,7 +257,8 @@ OIDC_RP_SCOPES = 'openid profile email'
 LOGIN_URL = os.getenv('LOGIN_URL', '/')
 OIDC_RP_SIGN_ALGO = os.getenv('OIDC_RP_SIGN_ALGO', 'RS256')
 LOGOUT_REDIRECT_URL = os.getenv('LOGOUT_REDIRECT_URL', '/')
-LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', '/')
+# Configurar la URL del frontend - ajusta según tu configuración
+LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', 'http://localhost:3000/')
 
 # Opcional: auto-crear usuarios
 OIDC_CREATE_USER = True

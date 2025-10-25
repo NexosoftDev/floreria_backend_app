@@ -1,0 +1,20 @@
+name: Deploy to Jenkins PROD
+
+on:
+  workflow_run:
+    workflows: ["Build & Push Prod to GHCR"]
+    types:
+      - completed
+
+jobs:
+  trigger-jenkins:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Jenkins PROD Job
+        env:
+          JENKINS_TOKEN: ${{ secrets.JENKINS_WEBHOOK_TOKEN_PROD }}
+        run: |
+          echo "🚀 Triggering Jenkins PROD..."
+          curl -X POST "http://144.172.91.208:8080/generic-webhook-trigger/invoke?token=${JENKINS_TOKEN}"

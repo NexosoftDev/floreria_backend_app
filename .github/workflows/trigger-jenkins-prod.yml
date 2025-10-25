@@ -17,4 +17,4 @@ jobs:
           JENKINS_TOKEN: ${{ secrets.JENKINS_WEBHOOK_TOKEN_PROD }}
         run: |
           echo "🚀 Triggering Jenkins PROD..."
-          curl -X POST "http://144.172.91.208:8080/generic-webhook-trigger/invoke?token=${JENKINS_TOKEN}"
+          curl -X POST "http://172.191.14.219:8080/generic-webhook-trigger/invoke?token=${JENKINS_TOKEN}"

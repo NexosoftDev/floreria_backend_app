@@ -37,8 +37,13 @@ EXPOSE 8000
 
 # Ejecutar migraciones y collectstatic, luego iniciar gunicorn
  # Ejecutar migraciones y collectstatic, luego iniciar el servidor de desarrollo
-CMD dotenv run python manage.py makemigrations --noinput && \
-    dotenv run python manage.py migrate --noinput && \
-    dotenv run python manage.py collectstatic --noinput && \
-    dotenv run python manage.py runserver 0.0.0.0:8000
-
+CMD bash -c "
+    python manage.py makemigrations --noinput &&
+    python manage.py migrate --noinput &&
+    python manage.py collectstatic --noinput &&
+    echo 'from django.contrib.auth.models import User; \
+          User.objects.filter(username=\"admin\").exists() or \
+          User.objects.create_superuser(\"admin\", \"admin@example.com\", \"admin123\")' \
+          | python manage.py shell &&
+    python manage.py runserver 0.0.0.0:8000
+"

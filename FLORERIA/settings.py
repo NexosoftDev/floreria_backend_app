@@ -30,6 +30,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# CSRF Configuration
+CSRF_TRUSTED_ORIGINS = [
+    'https://backend-floreria.nuxtin.software',
+]
+
 CORS_ALLOW_CREDENTIALS = True
 
 

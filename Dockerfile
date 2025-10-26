@@ -37,7 +37,12 @@ EXPOSE 8000
 
 # Ejecutar migraciones y collectstatic, luego iniciar gunicorn
  # Ejecutar migraciones y collectstatic, luego iniciar el servidor de desarrollo
-CMD dotenv run python manage.py makemigrations --noinput && \
-    dotenv run python manage.py migrate --noinput && \
-    dotenv run python manage.py collectstatic --noinput && \
-    dotenv run python manage.py runserver 0.0.0.0:8000
+#CMD dotenv run python manage.py makemigrations --noinput && \
+ #   dotenv run python manage.py migrate --noinput && \
+  #  dotenv run python manage.py collectstatic --noinput && \
+   # dotenv run python manage.py runserver 0.0.0.0:8000
+
+CMD python manage.py makemigrations --noinput && \
+    python manage.py migrate --noinput && \
+    python manage.py collectstatic --noinput && \
+    python manage.py runserver 0.0.0.0:8000

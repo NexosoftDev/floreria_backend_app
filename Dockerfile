@@ -35,8 +35,6 @@ RUN mkdir -p /app/staticfiles /app/media
 # Exponer el puerto 8000
 EXPOSE 8000
 
-#nuevo commit
-
 # Ejecutar migraciones y collectstatic, luego iniciar gunicorn
  # Ejecutar migraciones y collectstatic, luego iniciar el servidor de desarrollo
 #CMD dotenv run python manage.py makemigrations --noinput && \

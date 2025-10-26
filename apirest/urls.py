@@ -2,6 +2,7 @@ from django.urls import include, path
 from rest_framework import routers
 from users.viewsets import RegisterViewSet, AuthTokenViewset, LogoutViewset, TokenRefreshViewSet, UserViewSet
 from dynamic_preferences.api.viewsets import GlobalPreferencesViewSet
+from apirest import health_views
 
 drf_router = routers.DefaultRouter()
 
@@ -20,6 +21,8 @@ urlpatterns = [
     path('', include(drf_router.urls)),
     path('catalogo/', include('catalogo.urls')),
     path('oidc/', include('oidc.urls')),
+    path('health/', health_views.health_check, name='health-check'),
+    path('ready/', health_views.readiness_check, name='readiness-check'),
 
 
 ]

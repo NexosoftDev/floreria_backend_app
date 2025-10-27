@@ -258,18 +258,44 @@ OIDC_RP_CLIENT_ID = os.getenv('OIDC_RP_CLIENT_ID', '')
 OIDC_RP_CLIENT_SECRET = os.getenv('OIDC_RP_CLIENT_SECRET', '')
 OIDC_RP_SCOPES = 'openid profile email'
 
+# Mozilla Django OIDC calculará automáticamente la URL del callback usando el nombre de la vista
+# No configurar OIDC_AUTHENTICATION_CALLBACK_URL como URL absoluta
+
 LOGIN_URL = os.getenv('LOGIN_URL', '/')
 OIDC_RP_SIGN_ALGO = os.getenv('OIDC_RP_SIGN_ALGO', 'RS256')
-LOGOUT_REDIRECT_URL = os.getenv('LOGOUT_REDIRECT_URL', '/')
-# Configurar la URL del frontend - ajusta según tu configuración
+LOGOUT_REDIRECT_URL = os.getenv('LOGOUT_REDIRECT_URL', 'http://localhost:3000')
+# URL del frontend donde redirigir al usuario DESPUÉS de autenticarse
 LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', 'http://localhost:3000/')
 
-# Opcional: auto-crear usuarios
+# Auto-crear usuarios
 OIDC_CREATE_USER = True
 
 # Almacenar tokens en la sesión
 OIDC_STORE_ACCESS_TOKEN = True
 OIDC_STORE_ID_TOKEN = True
+
+# Configuración de sesión necesaria para OIDC
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SECURE = False  # True en producción con HTTPS
+SESSION_COOKIE_HTTPONLY = True
+
+# Timeouts importantes
+OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 3600  # 1 hora
+SESSION_COOKIE_AGE = 86400  # 24 horas
+
+# Configuración de verificación de tokens
+OIDC_USE_NONCE = True
+OIDC_STATE_SIZE = 32
+
+# IMPORTANTE: Para desarrollo, podemos deshabilitar la verificación de firma del token
+# Esto acelera el proceso de autenticación significativamente
+# ⚠️ NUNCA usar esto en producción
+OIDC_VERIFY_SSL = True  # Cambiar a False solo si Keycloak usa certificado auto-firmado
+# Para debugging y desarrollo rápido (ELIMINAR EN PRODUCCIÓN):
+OIDC_VERIFY_JWT = os.getenv('OIDC_VERIFY_JWT', 'True').lower() == 'true'
+
+# Cachear las JWKS keys para evitar descargarlas en cada request
+OIDC_JWKS_EXPIRATION_TIME = 3600  # 1 hora
 
 # CONFIGURACION DE AUTENTICACION
 USERS_AUTH = {
@@ -277,5 +303,5 @@ USERS_AUTH = {
     "OIDC_OP_BASE_URL" : OIDC_OP_BASE_URL
 }
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+#SECURE_SSL_REDIRECT = True
